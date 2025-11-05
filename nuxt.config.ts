@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { provider } from 'std-env'
 import { currentLocales } from './i18n/i18n'
 
@@ -5,22 +6,19 @@ import { currentLocales } from './i18n/i18n'
 export default defineNuxtConfig({
   modules: [
     '@nuxthub/core',
-    'shadcn-nuxt',
-    '@vueuse/motion/nuxt',
-    '@nuxt/eslint',
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/color-mode',
     '@nuxtjs/i18n',
+    '@nuxt/eslint',
+    '@vueuse/motion/nuxt',
+    'shadcn-nuxt',
   ],
-
   devtools: { enabled: true },
-
+  css: ['~/assets/css/tailwind.css'],
   colorMode: {
     classSuffix: '',
   },
-
   runtimeConfig: {
-    siteToken: 'SinkCool',
+    siteToken: crypto.randomUUID(),
     redirectStatusCode: '301',
     linkCacheTtl: 60,
     redirectWithQuery: false,
@@ -38,7 +36,6 @@ export default defineNuxtConfig({
       slugDefaultLength: '6',
     },
   },
-
   routeRules: {
     '/': {
       prerender: true,
@@ -50,21 +47,16 @@ export default defineNuxtConfig({
     '/dashboard': {
       redirect: '/dashboard/links',
     },
+    '/api/**': {
+      cors: process.env.NUXT_API_CORS === 'true',
+    },
   },
-
-  future: {
-    compatibilityVersion: 4,
-  },
-
   experimental: {
     enforceModuleCompatibility: true,
   },
-
-  compatibilityDate: {
-    cloudflare: '2025-05-08',
-  },
-
+  compatibilityDate: 'latest',
   nitro: {
+    preset: import.meta.env.DEV ? 'cloudflare-module' : undefined,
     experimental: {
       openAPI: true,
     },
@@ -86,7 +78,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   hub: {
     ai: true,
     analytics: true,
@@ -96,21 +87,23 @@ export default defineNuxtConfig({
     kv: true,
     workers: provider !== 'cloudflare_pages',
   },
-
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+  },
   eslint: {
     config: {
       stylistic: true,
       standalone: false,
     },
   },
-
   i18n: {
     locales: currentLocales,
     compilation: {
       strictMessage: false,
       escapeHtml: true,
     },
-    lazy: true,
     strategy: 'no_prefix',
     detectBrowserLanguage: {
       useCookie: true,
@@ -120,7 +113,6 @@ export default defineNuxtConfig({
     baseUrl: '/',
     defaultLocale: 'en-US',
   },
-
   shadcn: {
     /**
      * Prefix for all the imported component
